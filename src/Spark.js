@@ -639,7 +639,7 @@ export default function Spark() {
             fontSize: 32, fontWeight: 800, margin: 0, letterSpacing: -1, cursor: "pointer",
             background: grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
             backgroundSize: "200% auto", animation: "shimmer 4s linear infinite",
-          }}>✦ Spark</h1>
+          }}>✦ Quotify</h1>
           <div style={{ display: "flex", gap: 8 }}>
             {view === "explore" && (
               <button onClick={() => setShowSubmit(true)} style={{
