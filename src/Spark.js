@@ -61,6 +61,7 @@ const Particle = ({ x, y, size, color, delay, mouseX, mouseY }) => {
   );
 };
 
+// --- ADMIN COMPONENTS ---
 const StatCard = ({ label, value, color }) => (
   <div style={{
     background: "rgba(255,255,255,0.04)", borderRadius: 12, padding: "16px 20px",
@@ -152,7 +153,7 @@ const QuoteManager = ({ quotes, setQuotes, allTopics }) => {
   };
 
   const handleDelete = (id) => {
-    if (window.confirm("Delete this quote?")) setQuotes(quotes.filter(q => q.id !== id));
+    if (confirm("Delete this quote?")) setQuotes(quotes.filter(q => q.id !== id));
   };
 
   const inputStyle = {
@@ -234,6 +235,7 @@ const TopicManager = ({ quotes, setQuotes, moods, setMoods }) => {
   const topics = {};
   quotes.filter(q => q.status === "approved").forEach(q => q.topics.forEach(t => { topics[t] = (topics[t] || 0) + 1; }));
   const sorted = Object.entries(topics).sort((a, b) => b[1] - a[1]);
+  const [newTopic, setNewTopic] = useState("");
   const [renaming, setRenaming] = useState(null);
   const [renameVal, setRenameVal] = useState("");
 
@@ -256,7 +258,7 @@ const TopicManager = ({ quotes, setQuotes, moods, setMoods }) => {
   };
 
   const deleteTopic = (topic) => {
-    if (!window.confirm(`Remove "${topic}" from all quotes?`)) return;
+    if (!confirm(`Remove "${topic}" from all quotes?`)) return;
     setQuotes(quotes.map(q => ({ ...q, topics: q.topics.filter(t => t !== topic) })));
   };
 
@@ -355,7 +357,7 @@ const ModerationQueue = ({ quotes, setQuotes }) => {
                 <div>
                   <div style={{ fontSize: 14, lineHeight: 1.5, marginBottom: 4 }}>"{q.text}"</div>
                   <div style={{ fontSize: 12, opacity: 0.5 }}>— {q.author}</div>
-                  <div style={{ marginTop: 6, display: "flex", gap: 8 }}>
+                  <div style={{ marginTop: 8, display: "flex", gap: 8 }}>
                     {q.topics.map(t => <span key={t} style={{ fontSize: 11, padding: "2px 8px", borderRadius: 99, background: "rgba(255,255,255,0.08)" }}>{t}</span>)}
                   </div>
                   <div style={{ marginTop: 10, display: "flex", gap: 8 }}>
@@ -369,6 +371,59 @@ const ModerationQueue = ({ quotes, setQuotes }) => {
           ))}
         </div>
       )}
+    </div>
+  );
+};
+
+// Submit Quote Modal
+const ADMIN_CREDENTIALS = { username: "admin", password: "spark2025" };
+
+const LoginModal = ({ onLogin, onClose }) => {
+  const [form, setForm] = useState({ username: "", password: "" });
+  const [error, setError] = useState("");
+  const inputStyle = {
+    background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.15)",
+    borderRadius: 10, padding: "10px 14px", color: "#fff", fontSize: 14, width: "100%", outline: "none",
+  };
+  const handle = () => {
+    if (form.username === ADMIN_CREDENTIALS.username && form.password === ADMIN_CREDENTIALS.password) {
+      onLogin();
+    } else {
+      setError("Invalid username or password");
+      setTimeout(() => setError(""), 3000);
+    }
+  };
+  return (
+    <div style={{
+      position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", display: "flex",
+      alignItems: "center", justifyContent: "center", zIndex: 100, backdropFilter: "blur(8px)",
+    }} onClick={onClose}>
+      <div onClick={e => e.stopPropagation()} style={{
+        background: "#1a1528", borderRadius: 16, padding: 28, width: "90%", maxWidth: 380,
+        border: "1px solid rgba(255,255,255,0.1)", animation: "fadeSlideIn 0.3s ease",
+      }}>
+        <div style={{ textAlign: "center", marginBottom: 20 }}>
+          <div style={{ fontSize: 36, marginBottom: 8 }}>🔐</div>
+          <h3 style={{ margin: 0, fontSize: 18 }}>Admin Login</h3>
+          <p style={{ fontSize: 13, opacity: 0.4, marginTop: 4 }}>Enter your credentials to continue</p>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <input placeholder="Username" value={form.username} onChange={e => setForm({ ...form, username: e.target.value })}
+            onKeyDown={e => e.key === "Enter" && handle()} style={inputStyle} autoFocus />
+          <input placeholder="Password" type="password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })}
+            onKeyDown={e => e.key === "Enter" && handle()} style={inputStyle} />
+          {error && <div style={{ color: "#ef4444", fontSize: 13, textAlign: "center", animation: "fadeSlideIn 0.2s ease" }}>{error}</div>}
+          <button onClick={handle} style={{
+            padding: "10px", borderRadius: 10, border: "none",
+            background: "linear-gradient(135deg, #8b5cf6, #6366f1)", color: "#fff",
+            fontSize: 14, cursor: "pointer", fontWeight: 600, marginTop: 4,
+          }}>Log In</button>
+          <button onClick={onClose} style={{
+            padding: "8px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.1)",
+            background: "transparent", color: "rgba(255,255,255,0.5)", fontSize: 13, cursor: "pointer",
+          }}>Cancel</button>
+        </div>
+      </div>
     </div>
   );
 };
@@ -419,6 +474,7 @@ const SubmitModal = ({ onSubmit, onClose }) => {
   );
 };
 
+// --- MAIN APP ---
 export default function Spark() {
   const [quotes, setQuotes] = useState(defaultQuotes);
   const [moodsData, setMoodsData] = useState(defaultMoods);
@@ -434,10 +490,12 @@ export default function Spark() {
   const [typedText, setTypedText] = useState("");
   const [copied, setCopied] = useState(false);
   const [searchResults, setSearchResults] = useState(null);
-  const [view, setView] = useState("explore");
+  const [view, setView] = useState("explore"); // explore | admin
   const [adminTab, setAdminTab] = useState("dashboard");
   const [searchLog, setSearchLog] = useState([]);
   const [showSubmit, setShowSubmit] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
   const containerRef = useRef(null);
 
   const approvedQuotes = useMemo(() => quotes.filter(q => q.status === "approved"), [quotes]);
@@ -561,6 +619,7 @@ export default function Spark() {
         .atab.active{opacity:1;background:rgba(255,255,255,0.08)}
       `}</style>
 
+      {/* Particles (only in explore) */}
       {view === "explore" && particles.map(p => (
         <Particle key={p.id} {...p} color={moodData.gradient[p.id % 3]} mouseX={mousePos.x} mouseY={mousePos.y} />
       ))}
@@ -574,6 +633,7 @@ export default function Spark() {
       )}
 
       <div style={{ position: "relative", zIndex: 10, padding: "30px 20px", maxWidth: 800, margin: "0 auto" }}>
+        {/* Header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
           <h1 onClick={() => setView("explore")} style={{
             fontSize: 32, fontWeight: 800, margin: 0, letterSpacing: -1, cursor: "pointer",
@@ -587,11 +647,21 @@ export default function Spark() {
                 background: "rgba(255,255,255,0.05)", color: "#fff", cursor: "pointer", fontSize: 13,
               }}>Submit Quote</button>
             )}
-            <button onClick={() => setView(view === "explore" ? "admin" : "explore")} style={{
+            {view === "admin" && isAdmin && (
+              <button onClick={() => { setIsAdmin(false); setView("explore"); }} style={{
+                padding: "8px 16px", borderRadius: 99, border: "1px solid rgba(239,68,68,0.3)",
+                background: "rgba(239,68,68,0.1)", color: "#fff", cursor: "pointer", fontSize: 13,
+              }}>Logout</button>
+            )}
+            <button onClick={() => {
+              if (view === "admin") { setView("explore"); }
+              else if (isAdmin) { setView("admin"); }
+              else { setShowLogin(true); }
+            }} style={{
               padding: "8px 16px", borderRadius: 99, border: "1px solid rgba(255,255,255,0.15)",
               background: view === "admin" ? "rgba(139,92,246,0.2)" : "rgba(255,255,255,0.05)",
-              color: "#fff", cursor: "pointer", fontSize: 13,
-            }}>{view === "admin" ? "← Back to Explore" : "Admin"}</button>
+              color: "#fff", cursor: "pointer", fontSize: 13, display: "flex", alignItems: "center", gap: 6,
+            }}>{view === "admin" ? "← Back to Explore" : <><span style={{ fontSize: 15 }}>🔒</span> Admin</>}</button>
           </div>
         </div>
 
@@ -610,6 +680,7 @@ export default function Spark() {
           </div>
         ) : (
           <>
+            {/* Search */}
             <div style={{ display: "flex", justifyContent: "center", marginBottom: 20, position: "relative" }}>
               <div style={{ position: "relative", width: "100%", maxWidth: 400 }}>
                 <input className="s-input" placeholder="Search topics, words, or authors..."
@@ -624,6 +695,7 @@ export default function Spark() {
               </div>
             </div>
 
+            {/* Moods */}
             <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 8, marginBottom: 30 }}>
               {Object.entries(moodsData).map(([key, m]) => (
                 <button key={key} className={`m-btn ${mood === key ? "active" : ""}`}
@@ -692,6 +764,7 @@ export default function Spark() {
       </div>
 
       {showSubmit && <SubmitModal onSubmit={handleSubmitQuote} onClose={() => setShowSubmit(false)} />}
+      {showLogin && <LoginModal onLogin={() => { setIsAdmin(true); setShowLogin(false); setView("admin"); }} onClose={() => setShowLogin(false)} />}
     </div>
   );
 }
