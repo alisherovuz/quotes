@@ -1,42 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-
-const defaultQuotes = [
-  { id:1, text:"The only way to do great work is to love what you do.", author:"Steve Jobs", topics:["motivation","work","passion"], views:0, favs:0, status:"approved" },
-  { id:2, text:"In the middle of difficulty lies opportunity.", author:"Albert Einstein", topics:["courage","challenge","opportunity"], views:0, favs:0, status:"approved" },
-  { id:3, text:"The future belongs to those who believe in the beauty of their dreams.", author:"Eleanor Roosevelt", topics:["dreams","future","belief"], views:0, favs:0, status:"approved" },
-  { id:4, text:"It is during our darkest moments that we must focus to see the light.", author:"Aristotle", topics:["courage","hope","strength"], views:0, favs:0, status:"approved" },
-  { id:5, text:"The best time to plant a tree was 20 years ago. The second best time is now.", author:"Chinese Proverb", topics:["motivation","action","time"], views:0, favs:0, status:"approved" },
-  { id:6, text:"Creativity is intelligence having fun.", author:"Albert Einstein", topics:["creativity","intelligence","fun"], views:0, favs:0, status:"approved" },
-  { id:7, text:"What you get by achieving your goals is not as important as what you become.", author:"Zig Ziglar", topics:["growth","goals","success"], views:0, favs:0, status:"approved" },
-  { id:8, text:"The mind is everything. What you think you become.", author:"Buddha", topics:["mindset","calm","wisdom"], views:0, favs:0, status:"approved" },
-  { id:9, text:"Happiness is not something ready made. It comes from your own actions.", author:"Dalai Lama", topics:["happiness","action","calm"], views:0, favs:0, status:"approved" },
-  { id:10, text:"Be yourself; everyone else is already taken.", author:"Oscar Wilde", topics:["authenticity","self","courage"], views:0, favs:0, status:"approved" },
-  { id:11, text:"The only impossible journey is the one you never begin.", author:"Tony Robbins", topics:["motivation","action","courage"], views:0, favs:0, status:"approved" },
-  { id:12, text:"Turn your wounds into wisdom.", author:"Oprah Winfrey", topics:["strength","wisdom","growth"], views:0, favs:0, status:"approved" },
-  { id:13, text:"Not all those who wander are lost.", author:"J.R.R. Tolkien", topics:["curiosity","adventure","freedom"], views:0, favs:0, status:"approved" },
-  { id:14, text:"Life is what happens when you're busy making other plans.", author:"John Lennon", topics:["life","mindfulness","calm"], views:0, favs:0, status:"approved" },
-  { id:15, text:"The secret of getting ahead is getting started.", author:"Mark Twain", topics:["motivation","action","success"], views:0, favs:0, status:"approved" },
-  { id:16, text:"Everything you can imagine is real.", author:"Pablo Picasso", topics:["creativity","imagination","dreams"], views:0, favs:0, status:"approved" },
-  { id:17, text:"Do what you can, with what you have, where you are.", author:"Theodore Roosevelt", topics:["action","courage","motivation"], views:0, favs:0, status:"approved" },
-  { id:18, text:"Simplicity is the ultimate sophistication.", author:"Leonardo da Vinci", topics:["creativity","wisdom","calm"], views:0, favs:0, status:"approved" },
-  { id:19, text:"Stars can't shine without darkness.", author:"D.H. Sidebottom", topics:["hope","strength","courage"], views:0, favs:0, status:"approved" },
-  { id:20, text:"The energy of the mind is the essence of life.", author:"Aristotle", topics:["mindset","life","wisdom"], views:0, favs:0, status:"approved" },
-  { id:21, text:"Believe you can and you're halfway there.", author:"Theodore Roosevelt", topics:["belief","motivation","courage"], views:0, favs:0, status:"approved" },
-  { id:22, text:"What lies behind us and what lies before us are tiny matters compared to what lies within us.", author:"Ralph Waldo Emerson", topics:["strength","self","wisdom"], views:0, favs:0, status:"approved" },
-  { id:23, text:"The best revenge is massive success.", author:"Frank Sinatra", topics:["success","motivation","strength"], views:0, favs:0, status:"approved" },
-  { id:24, text:"It always seems impossible until it's done.", author:"Nelson Mandela", topics:["courage","motivation","hope"], views:0, favs:0, status:"approved" },
-  { id:25, text:"Imagination is the beginning of creation.", author:"George Bernard Shaw", topics:["creativity","imagination","dreams"], views:0, favs:0, status:"approved" },
-  { id:26, text:"You must be the change you wish to see in the world.", author:"Mahatma Gandhi", topics:["change","action","wisdom"], views:0, favs:0, status:"approved" },
-  { id:27, text:"Love all, trust a few, do wrong to none.", author:"William Shakespeare", topics:["love","wisdom","life"], views:0, favs:0, status:"approved" },
-  { id:28, text:"Where there is love there is life.", author:"Mahatma Gandhi", topics:["love","life","happiness"], views:0, favs:0, status:"approved" },
-  { id:29, text:"The greatest glory in living lies not in never falling, but in rising every time we fall.", author:"Nelson Mandela", topics:["strength","courage","growth"], views:0, favs:0, status:"approved" },
-  { id:30, text:"To live is the rarest thing in the world. Most people exist, that is all.", author:"Oscar Wilde", topics:["life","authenticity","curiosity"], views:0, favs:0, status:"approved" },
-  { id:31, text:"Stay hungry, stay foolish.", author:"Steve Jobs", topics:["curiosity","creativity","motivation"], views:0, favs:0, status:"approved" },
-  { id:32, text:"The wound is the place where the light enters you.", author:"Rumi", topics:["strength","hope","wisdom"], views:0, favs:0, status:"approved" },
-  { id:33, text:"If you want to fly, give up everything that weighs you down.", author:"Toni Morrison", topics:["freedom","courage","growth"], views:0, favs:0, status:"approved" },
-  { id:34, text:"A ship in harbor is safe, but that is not what ships are built for.", author:"John A. Shedd", topics:["courage","adventure","action"], views:0, favs:0, status:"approved" },
-  { id:35, text:"What we think, we become.", author:"Buddha", topics:["mindset","calm","wisdom"], views:0, favs:0, status:"approved" },
-];
+import { supabase } from "./supabase";
 
 var darkMoods = {
   all:{label:"All",gradient:["#6366f1","#8b5cf6","#a855f7"],bg:"#0f0a1e"},
@@ -62,23 +25,19 @@ var ADMIN = {username:"admin",password:"spark2025"};
 function getDailyQuote(quotes){
   var d=new Date();
   var seed=d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate();
-  var ap=quotes.filter(function(q){return q.status==="approved"});
-  return ap[seed%ap.length];
+  if(quotes.length===0)return null;
+  return quotes[seed%quotes.length];
 }
 
 function useThemeColors(light){
   return {
-    fg: light?"#1a1a2e":"#fff",
-    fgSoft: light?"rgba(0,0,0,0.5)":"rgba(255,255,255,0.5)",
-    border: light?"rgba(0,0,0,0.1)":"rgba(255,255,255,0.15)",
-    cardBg: light?"rgba(0,0,0,0.03)":"rgba(255,255,255,0.05)",
-    cardBdr: light?"rgba(0,0,0,0.06)":"rgba(255,255,255,0.08)",
-    hoverBg: light?"rgba(0,0,0,0.06)":"rgba(255,255,255,0.1)",
-    inputBg: light?"rgba(0,0,0,0.04)":"rgba(255,255,255,0.06)",
-    inputBdr: light?"rgba(0,0,0,0.1)":"rgba(255,255,255,0.12)",
-    modalBg: light?"#fff":"#1a1528",
-    panelBg: light?"rgba(0,0,0,0.02)":"rgba(255,255,255,0.03)",
-    panelBdr: light?"rgba(0,0,0,0.05)":"rgba(255,255,255,0.05)",
+    fg:light?"#1a1a2e":"#fff",
+    fgSoft:light?"rgba(0,0,0,0.5)":"rgba(255,255,255,0.5)",
+    border:light?"rgba(0,0,0,0.1)":"rgba(255,255,255,0.15)",
+    cardBg:light?"rgba(0,0,0,0.03)":"rgba(255,255,255,0.05)",
+    cardBdr:light?"rgba(0,0,0,0.06)":"rgba(255,255,255,0.08)",
+    hoverBg:light?"rgba(0,0,0,0.06)":"rgba(255,255,255,0.1)",
+    modalBg:light?"#fff":"#1a1528",
   };
 }
 
@@ -112,8 +71,8 @@ function AdminDashboard(props){
   var quotes=props.quotes,sl=props.searchLog,c=props.light;
   var approved=quotes.filter(function(q){return q.status==="approved"});
   var pending=quotes.filter(function(q){return q.status==="pending"});
-  var topics=[...new Set(approved.flatMap(function(q){return q.topics}))];
-  var topQ=[...approved].sort(function(a,b){return b.views-a.views}).slice(0,5);
+  var topics=[...new Set(approved.flatMap(function(q){return q.topics||[]}))];
+  var topQ=[...approved].sort(function(a,b){return(b.views||0)-(a.views||0)}).slice(0,5);
   var tc={};sl.forEach(function(s){tc[s]=(tc[s]||0)+1});
   var topS=Object.entries(tc).sort(function(a,b){return b[1]-a[1]}).slice(0,5);
   var bg=c?"rgba(0,0,0,0.02)":"rgba(255,255,255,0.03)";
@@ -125,7 +84,7 @@ function AdminDashboard(props){
         <StatCard label="Total Quotes" value={approved.length} color="#8b5cf6" light={c}/>
         <StatCard label="Topics" value={topics.length} color="#06b6d4" light={c}/>
         <StatCard label="Pending" value={pending.length} color="#f97316" light={c}/>
-        <StatCard label="Total Views" value={approved.reduce(function(s,q){return s+q.views},0)} color="#10b981" light={c}/>
+        <StatCard label="Total Views" value={approved.reduce(function(s,q){return s+(q.views||0)},0)} color="#10b981" light={c}/>
       </div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
         <div style={{background:bg,borderRadius:12,padding:16,border:bd}}>
@@ -133,7 +92,7 @@ function AdminDashboard(props){
           {topQ.map(function(q,i){return(
             <div key={q.id} style={{padding:"8px 0",borderBottom:rbd,fontSize:13}}>
               <span style={{opacity:0.4,marginRight:8}}>#{i+1}</span>
-              {'"'+q.text.slice(0,45)+'..."'} <span style={{opacity:0.4,float:"right"}}>{q.views} views</span>
+              {'"'+q.text.slice(0,45)+'..."'} <span style={{opacity:0.4,float:"right"}}>{q.views||0} views</span>
             </div>
           )})}
           {topQ.length===0&&<p style={{opacity:0.3,fontSize:13}}>No data yet</p>}
@@ -154,24 +113,32 @@ function AdminDashboard(props){
 }
 
 function QuoteManager(props){
-  var quotes=props.quotes,setQuotes=props.setQuotes,light=props.light;
+  var quotes=props.quotes,onRefresh=props.onRefresh,light=props.light;
   var [filter,setFilter]=useState("");
   var [editing,setEditing]=useState(null);
   var [form,setForm]=useState({text:"",author:"",topics:""});
   var [showAdd,setShowAdd]=useState(false);
+  var [loading,setLoading]=useState(false);
   var approved=quotes.filter(function(q){return q.status==="approved"});
   var filtered=filter?approved.filter(function(q){return q.text.toLowerCase().includes(filter.toLowerCase())||q.author.toLowerCase().includes(filter.toLowerCase())}):approved;
   var ibd="1px solid "+(light?"rgba(0,0,0,0.1)":"rgba(255,255,255,0.12)");
   var iS={background:light?"rgba(0,0,0,0.04)":"rgba(255,255,255,0.06)",border:ibd,borderRadius:8,padding:"8px 12px",color:light?"#1a1a2e":"#fff",fontSize:13,width:"100%",outline:"none"};
   var cbd="1px solid "+(light?"rgba(0,0,0,0.06)":"rgba(255,255,255,0.06)");
-  function doAdd(){
+
+  async function doAdd(){
     if(!form.text.trim()||!form.author.trim())return;
-    setQuotes([...quotes,{id:Date.now(),text:form.text.trim(),author:form.author.trim(),topics:form.topics.split(",").map(function(t){return t.trim().toLowerCase()}).filter(Boolean),views:0,favs:0,status:"approved"}]);
-    setForm({text:"",author:"",topics:""});setShowAdd(false);
+    setLoading(true);
+    await supabase.from("quotes").insert({text:form.text.trim(),author:form.author.trim(),topics:form.topics.split(",").map(function(t){return t.trim().toLowerCase()}).filter(Boolean),views:0,favs:0,status:"approved"});
+    setForm({text:"",author:"",topics:""});setShowAdd(false);setLoading(false);onRefresh();
   }
-  function doSave(id){
-    setQuotes(quotes.map(function(q){return q.id===id?{...q,text:form.text.trim(),author:form.author.trim(),topics:form.topics.split(",").map(function(t){return t.trim().toLowerCase()}).filter(Boolean)}:q}));
-    setEditing(null);setForm({text:"",author:"",topics:""});
+  async function doSave(id){
+    setLoading(true);
+    await supabase.from("quotes").update({text:form.text.trim(),author:form.author.trim(),topics:form.topics.split(",").map(function(t){return t.trim().toLowerCase()}).filter(Boolean)}).eq("id",id);
+    setEditing(null);setForm({text:"",author:"",topics:""});setLoading(false);onRefresh();
+  }
+  async function doDelete(id){
+    if(!window.confirm("Delete?"))return;
+    await supabase.from("quotes").delete().eq("id",id);onRefresh();
   }
   return(
     <div>
@@ -186,7 +153,7 @@ function QuoteManager(props){
             <textarea placeholder="Quote text..." value={form.text} onChange={function(e){setForm({...form,text:e.target.value})}} style={{...iS,minHeight:60,resize:"vertical"}}/>
             <input placeholder="Author..." value={form.author} onChange={function(e){setForm({...form,author:e.target.value})}} style={iS}/>
             <input placeholder="Topics (comma separated)..." value={form.topics} onChange={function(e){setForm({...form,topics:e.target.value})}} style={iS}/>
-            <button onClick={doAdd} style={Btn("#8b5cf6")}>Add Quote</button>
+            <button onClick={doAdd} disabled={loading} style={Btn("#8b5cf6")}>{loading?"Adding...":"Add Quote"}</button>
           </div>
         </div>
       )}
@@ -199,7 +166,7 @@ function QuoteManager(props){
                 <input value={form.author} onChange={function(e){setForm({...form,author:e.target.value})}} style={iS}/>
                 <input value={form.topics} onChange={function(e){setForm({...form,topics:e.target.value})}} style={iS}/>
                 <div style={{display:"flex",gap:8}}>
-                  <button onClick={function(){doSave(q.id)}} style={Btn("#10b981")}>Save</button>
+                  <button onClick={function(){doSave(q.id)}} disabled={loading} style={Btn("#10b981")}>{loading?"Saving...":"Save"}</button>
                   <button onClick={function(){setEditing(null)}} style={Btn("rgba(120,120,120,0.3)")}>Cancel</button>
                 </div>
               </div>
@@ -208,10 +175,10 @@ function QuoteManager(props){
                 <div style={{fontSize:14,lineHeight:1.5,marginBottom:4}}>{'"'+q.text+'"'}</div>
                 <div style={{fontSize:12,opacity:0.5}}>{"— "+q.author}</div>
                 <div style={{marginTop:6,display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
-                  {q.topics.map(function(t){return <span key={t} style={{fontSize:11,padding:"2px 8px",borderRadius:99,background:light?"rgba(0,0,0,0.06)":"rgba(255,255,255,0.08)",opacity:0.7}}>{t}</span>})}
-                  <span style={{marginLeft:"auto",fontSize:11,opacity:0.3}}>{q.views} views</span>
-                  <button onClick={function(){setEditing(q.id);setForm({text:q.text,author:q.author,topics:q.topics.join(", ")})}} style={Btn("rgba(120,120,120,0.3)")}>Edit</button>
-                  <button onClick={function(){if(window.confirm("Delete?"))setQuotes(quotes.filter(function(x){return x.id!==q.id}))}} style={Btn("rgba(239,68,68,0.3)")}>Delete</button>
+                  {(q.topics||[]).map(function(t){return <span key={t} style={{fontSize:11,padding:"2px 8px",borderRadius:99,background:light?"rgba(0,0,0,0.06)":"rgba(255,255,255,0.08)",opacity:0.7}}>{t}</span>})}
+                  <span style={{marginLeft:"auto",fontSize:11,opacity:0.3}}>{q.views||0} views</span>
+                  <button onClick={function(){setEditing(q.id);setForm({text:q.text,author:q.author,topics:(q.topics||[]).join(", ")})}} style={Btn("rgba(120,120,120,0.3)")}>Edit</button>
+                  <button onClick={function(){doDelete(q.id)}} style={Btn("rgba(239,68,68,0.3)")}>Delete</button>
                 </div>
               </div>
             )}
@@ -223,18 +190,35 @@ function QuoteManager(props){
 }
 
 function TopicManager(props){
-  var quotes=props.quotes,setQuotes=props.setQuotes,moods=props.moods,light=props.light;
+  var quotes=props.quotes,onRefresh=props.onRefresh,moods=props.moods,light=props.light;
   var topics={};
-  quotes.filter(function(q){return q.status==="approved"}).forEach(function(q){q.topics.forEach(function(t){topics[t]=(topics[t]||0)+1})});
+  quotes.filter(function(q){return q.status==="approved"}).forEach(function(q){(q.topics||[]).forEach(function(t){topics[t]=(topics[t]||0)+1})});
   var sorted=Object.entries(topics).sort(function(a,b){return b[1]-a[1]});
   var [renaming,setRenaming]=useState(null);
   var [renameVal,setRenameVal]=useState("");
   var ibd="1px solid "+(light?"rgba(0,0,0,0.1)":"rgba(255,255,255,0.12)");
   var iS={background:light?"rgba(0,0,0,0.04)":"rgba(255,255,255,0.06)",border:ibd,borderRadius:8,padding:"6px 12px",color:light?"#1a1a2e":"#fff",fontSize:13,outline:"none"};
-  function doRename(topic){
+
+  async function doRename(topic){
     var n=renameVal.trim().toLowerCase();
-    if(n&&n!==topic)setQuotes(quotes.map(function(q){return{...q,topics:q.topics.map(function(t){return t===topic?n:t})}}));
-    setRenaming(null);
+    if(!n||n===topic){setRenaming(null);return;}
+    var toUpdate=quotes.filter(function(q){return(q.topics||[]).includes(topic)});
+    for(var i=0;i<toUpdate.length;i++){
+      var q=toUpdate[i];
+      var newTopics=(q.topics||[]).map(function(t){return t===topic?n:t});
+      await supabase.from("quotes").update({topics:newTopics}).eq("id",q.id);
+    }
+    setRenaming(null);onRefresh();
+  }
+  async function doDeleteTopic(topic){
+    if(!window.confirm("Remove "+topic+"?"))return;
+    var toUpdate=quotes.filter(function(q){return(q.topics||[]).includes(topic)});
+    for(var i=0;i<toUpdate.length;i++){
+      var q=toUpdate[i];
+      var newTopics=(q.topics||[]).filter(function(t){return t!==topic});
+      await supabase.from("quotes").update({topics:newTopics}).eq("id",q.id);
+    }
+    onRefresh();
   }
   return(
     <div>
@@ -256,7 +240,7 @@ function TopicManager(props){
                   <span style={{fontSize:14,flex:1}}>{topic}</span>
                   <span style={{fontSize:12,opacity:0.4}}>{count} quotes</span>
                   <button onClick={function(){setRenaming(topic);setRenameVal(topic)}} style={Btn("rgba(120,120,120,0.3)")}>Rename</button>
-                  <button onClick={function(){if(window.confirm("Remove "+topic+"?"))setQuotes(quotes.map(function(q){return{...q,topics:q.topics.filter(function(t){return t!==topic})}}))}} style={Btn("rgba(239,68,68,0.3)")}>Delete</button>
+                  <button onClick={function(){doDeleteTopic(topic)}} style={Btn("rgba(239,68,68,0.3)")}>Delete</button>
                 </>
               )}
             </div>
@@ -274,12 +258,24 @@ function TopicManager(props){
 }
 
 function ModerationQueue(props){
-  var quotes=props.quotes,setQuotes=props.setQuotes,light=props.light;
+  var quotes=props.quotes,onRefresh=props.onRefresh,light=props.light;
   var pending=quotes.filter(function(q){return q.status==="pending"});
   var [editId,setEditId]=useState(null);
   var [ef,setEf]=useState({text:"",author:"",topics:""});
   var ibd="1px solid "+(light?"rgba(0,0,0,0.1)":"rgba(255,255,255,0.12)");
   var iS={background:light?"rgba(0,0,0,0.04)":"rgba(255,255,255,0.06)",border:ibd,borderRadius:8,padding:"8px 12px",color:light?"#1a1a2e":"#fff",fontSize:13,width:"100%",outline:"none"};
+
+  async function doApprove(id){
+    await supabase.from("quotes").update({status:"approved"}).eq("id",id);onRefresh();
+  }
+  async function doReject(id){
+    await supabase.from("quotes").delete().eq("id",id);onRefresh();
+  }
+  async function doSaveApprove(id){
+    await supabase.from("quotes").update({text:ef.text,author:ef.author,topics:ef.topics.split(",").map(function(t){return t.trim().toLowerCase()}).filter(Boolean),status:"approved"}).eq("id",id);
+    setEditId(null);onRefresh();
+  }
+
   if(pending.length===0)return <div style={{textAlign:"center",padding:40,opacity:0.4}}><div style={{fontSize:32,marginBottom:8}}>✓</div><div>No pending submissions</div></div>;
   return(
     <div>
@@ -292,7 +288,7 @@ function ModerationQueue(props){
               <input value={ef.author} onChange={function(e){setEf({...ef,author:e.target.value})}} style={iS}/>
               <input value={ef.topics} onChange={function(e){setEf({...ef,topics:e.target.value})}} style={iS}/>
               <div style={{display:"flex",gap:8}}>
-                <button onClick={function(){setQuotes(quotes.map(function(x){return x.id===q.id?{...x,text:ef.text,author:ef.author,topics:ef.topics.split(",").map(function(t){return t.trim().toLowerCase()}).filter(Boolean),status:"approved"}:x}));setEditId(null)}} style={Btn("#10b981")}>Save & Approve</button>
+                <button onClick={function(){doSaveApprove(q.id)}} style={Btn("#10b981")}>Save & Approve</button>
                 <button onClick={function(){setEditId(null)}} style={Btn("rgba(120,120,120,0.3)")}>Cancel</button>
               </div>
             </div>
@@ -301,9 +297,9 @@ function ModerationQueue(props){
               <div style={{fontSize:14,lineHeight:1.5,marginBottom:4}}>{'"'+q.text+'"'}</div>
               <div style={{fontSize:12,opacity:0.5}}>{"— "+q.author}</div>
               <div style={{marginTop:10,display:"flex",gap:8}}>
-                <button onClick={function(){setQuotes(quotes.map(function(x){return x.id===q.id?{...x,status:"approved"}:x}))}} style={Btn("#10b981")}>Approve</button>
-                <button onClick={function(){setEditId(q.id);setEf({text:q.text,author:q.author,topics:q.topics.join(", ")})}} style={Btn("rgba(120,120,120,0.3)")}>Edit</button>
-                <button onClick={function(){setQuotes(quotes.filter(function(x){return x.id!==q.id}))}} style={Btn("rgba(239,68,68,0.3)")}>Reject</button>
+                <button onClick={function(){doApprove(q.id)}} style={Btn("#10b981")}>Approve</button>
+                <button onClick={function(){setEditId(q.id);setEf({text:q.text,author:q.author,topics:(q.topics||[]).join(", ")})}} style={Btn("rgba(120,120,120,0.3)")}>Edit</button>
+                <button onClick={function(){doReject(q.id)}} style={Btn("rgba(239,68,68,0.3)")}>Reject</button>
               </div>
             </div>
           )}
@@ -345,13 +341,29 @@ function LoginModal(props){
 function SubmitModal(props){
   var light=props.light;
   var [form,setForm]=useState({text:"",author:"",topics:""});
+  var [loading,setLoading]=useState(false);
+  var [success,setSuccess]=useState(false);
   var ibd="1px solid "+(light?"rgba(0,0,0,0.12)":"rgba(255,255,255,0.15)");
   var iS={background:light?"rgba(0,0,0,0.04)":"rgba(255,255,255,0.06)",border:ibd,borderRadius:10,padding:"10px 14px",color:light?"#1a1a2e":"#fff",fontSize:14,width:"100%",outline:"none"};
-  function handle(){
+  async function handle(){
     if(!form.text.trim()||!form.author.trim())return;
-    props.onSubmit({id:Date.now(),text:form.text.trim(),author:form.author.trim(),topics:form.topics.split(",").map(function(t){return t.trim().toLowerCase()}).filter(Boolean),views:0,favs:0,status:"pending"});
-    props.onClose();
+    setLoading(true);
+    await supabase.from("quotes").insert({
+      text:form.text.trim(),author:form.author.trim(),
+      topics:form.topics.split(",").map(function(t){return t.trim().toLowerCase()}).filter(Boolean),
+      views:0,favs:0,status:"pending"
+    });
+    setLoading(false);setSuccess(true);
+    setTimeout(function(){props.onClose()},1500);
   }
+  if(success)return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:100,backdropFilter:"blur(8px)"}}>
+      <div style={{background:light?"#fff":"#1a1528",borderRadius:16,padding:40,textAlign:"center",border:"1px solid "+(light?"rgba(0,0,0,0.1)":"rgba(255,255,255,0.1)")}}>
+        <div style={{fontSize:48,marginBottom:12}}>✓</div>
+        <div style={{fontSize:16}}>Quote submitted for review!</div>
+      </div>
+    </div>
+  );
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:100,backdropFilter:"blur(8px)"}} onClick={props.onClose}>
       <div onClick={function(e){e.stopPropagation()}} style={{background:light?"#fff":"#1a1528",borderRadius:16,padding:28,width:"90%",maxWidth:440,border:"1px solid "+(light?"rgba(0,0,0,0.1)":"rgba(255,255,255,0.1)"),boxShadow:light?"0 20px 60px rgba(0,0,0,0.15)":"none"}}>
@@ -361,7 +373,7 @@ function SubmitModal(props){
           <input placeholder="Author" value={form.author} onChange={function(e){setForm({...form,author:e.target.value})}} style={iS}/>
           <input placeholder="Topics (comma separated)" value={form.topics} onChange={function(e){setForm({...form,topics:e.target.value})}} style={iS}/>
           <div style={{display:"flex",gap:10,marginTop:4}}>
-            <button onClick={handle} style={{flex:1,padding:"10px",borderRadius:10,border:"none",background:"linear-gradient(135deg,#8b5cf6,#6366f1)",color:"#fff",fontSize:14,cursor:"pointer",fontWeight:600}}>Submit for Review</button>
+            <button onClick={handle} disabled={loading} style={{flex:1,padding:"10px",borderRadius:10,border:"none",background:"linear-gradient(135deg,#8b5cf6,#6366f1)",color:"#fff",fontSize:14,cursor:"pointer",fontWeight:600}}>{loading?"Submitting...":"Submit for Review"}</button>
             <button onClick={props.onClose} style={{padding:"10px 20px",borderRadius:10,border:"1px solid "+(light?"rgba(0,0,0,0.1)":"rgba(255,255,255,0.15)"),background:"transparent",color:light?"#666":"#fff",fontSize:14,cursor:"pointer"}}>Cancel</button>
           </div>
         </div>
@@ -371,7 +383,8 @@ function SubmitModal(props){
 }
 
 export default function Quoteum(){
-  var [quotes,setQuotes]=useState(defaultQuotes);
+  var [quotes,setQuotes]=useState([]);
+  var [loading,setLoading]=useState(true);
   var [light,setLight]=useState(false);
   var moodsData=light?lightMoods:darkMoods;
   var [mood,setMood]=useState("all");
@@ -396,9 +409,25 @@ export default function Quoteum(){
   var containerRef=useRef(null);
 
   var tc=useThemeColors(light);
+
+  // Fetch all quotes from Supabase (admin sees all, users see approved)
+  async function fetchQuotes(){
+    setLoading(true);
+    var result;
+    if(isAdmin){
+      result=await supabase.from("quotes").select("*").order("created_at",{ascending:false});
+    }else{
+      result=await supabase.from("quotes").select("*").order("created_at",{ascending:false});
+    }
+    if(result.data)setQuotes(result.data);
+    setLoading(false);
+  }
+
+  useEffect(function(){fetchQuotes()},[isAdmin]);
+
   var approvedQuotes=useMemo(function(){return quotes.filter(function(q){return q.status==="approved"})},[quotes]);
-  var allTopics=useMemo(function(){return[...new Set(approvedQuotes.flatMap(function(q){return q.topics}))].sort()},[approvedQuotes]);
-  var dailyQuote=useMemo(function(){return getDailyQuote(quotes)},[quotes]);
+  var allTopics=useMemo(function(){return[...new Set(approvedQuotes.flatMap(function(q){return q.topics||[]}))].sort()},[approvedQuotes]);
+  var dailyQuote=useMemo(function(){return getDailyQuote(approvedQuotes)},[approvedQuotes]);
   var particles=useMemo(function(){return Array.from({length:25},function(_,i){return{id:i,x:Math.random()*100,y:Math.random()*100,size:4+Math.random()*30,delay:Math.random()*3}})},[]);
 
   var moodData=moodsData[mood];
@@ -406,20 +435,24 @@ export default function Quoteum(){
 
   var getFiltered=useCallback(function(m,s){
     var f=approvedQuotes;
-    if(m!=="all")f=f.filter(function(q){return q.topics.includes(m)});
-    if(s)f=f.filter(function(q){return q.topics.some(function(t){return t.includes(s.toLowerCase())})||q.text.toLowerCase().includes(s.toLowerCase())||q.author.toLowerCase().includes(s.toLowerCase())});
+    if(m!=="all")f=f.filter(function(q){return(q.topics||[]).includes(m)});
+    if(s)f=f.filter(function(q){return(q.topics||[]).some(function(t){return t.includes(s.toLowerCase())})||q.text.toLowerCase().includes(s.toLowerCase())||q.author.toLowerCase().includes(s.toLowerCase())});
     return f.length?f:approvedQuotes;
   },[approvedQuotes]);
 
-  var pickRandom=useCallback(function(m,s){
+  function pickRandom(m,s){
     m=m||mood;s=s||"";
     var pool=getFiltered(m,s);
+    if(pool.length===0)return;
     var q=pool[Math.floor(Math.random()*pool.length)];
     setCurrent(q);setAnimKey(function(k){return k+1});setTyping(true);setTypedText("");
-    setQuotes(function(prev){return prev.map(function(pq){return pq.id===q.id?{...pq,views:pq.views+1}:pq})});
-  },[mood,getFiltered]);
+    // Update views in Supabase
+    supabase.from("quotes").update({views:(q.views||0)+1}).eq("id",q.id);
+  }
 
-  useEffect(function(){pickRandom()},[]);
+  useEffect(function(){
+    if(approvedQuotes.length>0&&!current)pickRandom();
+  },[approvedQuotes]);
 
   useEffect(function(){
     if(!typing||!current)return;
@@ -443,7 +476,7 @@ export default function Quoteum(){
     if(!current)return;
     var isFaved=favorites.some(function(q){return q.id===current.id});
     setFavorites(function(f){return isFaved?f.filter(function(q){return q.id!==current.id}):[...f,current]});
-    setQuotes(function(prev){return prev.map(function(q){return q.id===current.id?{...q,favs:q.favs+(isFaved?-1:1)}:q})});
+    supabase.from("quotes").update({favs:(current.favs||0)+(isFaved?-1:1)}).eq("id",current.id);
   }
   var isFav=current&&favorites.some(function(q){return q.id===current.id});
   function handleSearch(term){setSearchResults(getFiltered(mood,term));setSearch(term);setSuggestions([]);setSearchLog(function(prev){return[...prev,term.toLowerCase()]})}
@@ -457,7 +490,7 @@ export default function Quoteum(){
     {key:"moderation",label:"Moderation ("+quotes.filter(function(q){return q.status==="pending"}).length+")"},
   ];
 
-  var cssText = [
+  var cssText=[
     "@keyframes float{0%{transform:translateY(0)}100%{transform:translateY(-20px)}}",
     "@keyframes fadeSlideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}",
     "@keyframes fadeIn{from{opacity:0}to{opacity:1}}",
@@ -485,8 +518,18 @@ export default function Quoteum(){
     ".atab{padding:8px 16px;border-radius:8px;border:none;color:"+tc.fg+";cursor:pointer;font-size:13px;transition:all .2s;background:transparent;opacity:0.5}",
     ".atab:hover{opacity:0.8;background:"+tc.cardBg+"}",
     ".atab.active{opacity:1;background:"+tc.cardBg+"}",
-    "@media(max-width:640px){.hide-mobile{display:none!important}.admin-grid{grid-template-columns:1fr!important}}",
+    "@media(max-width:640px){.hide-mobile{display:none!important}}",
   ].join("\n");
+
+  if(loading)return(
+    <div style={{minHeight:"100vh",background:"#0f0a1e",display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <div style={{textAlign:"center",color:"#fff"}}>
+        <div style={{fontSize:40,marginBottom:12,animation:"pulse 1.5s infinite"}}>✦</div>
+        <div style={{opacity:0.5}}>Loading Quoteum...</div>
+      </div>
+      <style>{"@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}"}</style>
+    </div>
+  );
 
   return(
     <div ref={containerRef} onMouseMove={handleMouse} style={{
@@ -504,7 +547,6 @@ export default function Quoteum(){
       )}
 
       <div style={{position:"relative",zIndex:10,padding:"24px 16px",maxWidth:800,margin:"0 auto"}}>
-        {/* Header */}
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20,flexWrap:"wrap",gap:10}}>
           <h1 onClick={function(){setView("explore")}} style={{fontSize:30,fontWeight:800,margin:0,letterSpacing:-1,cursor:"pointer",backgroundImage:grad,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text",color:"transparent",backgroundSize:"200% auto",animation:"shimmer 4s linear infinite"}}>
             {"✦ Quoteum"}
@@ -537,13 +579,12 @@ export default function Quoteum(){
               )})}
             </div>
             {adminTab==="dashboard"&&<AdminDashboard quotes={quotes} searchLog={searchLog} light={light}/>}
-            {adminTab==="quotes"&&<QuoteManager quotes={quotes} setQuotes={setQuotes} light={light}/>}
-            {adminTab==="topics"&&<TopicManager quotes={quotes} setQuotes={setQuotes} moods={moodsData} light={light}/>}
-            {adminTab==="moderation"&&<ModerationQueue quotes={quotes} setQuotes={setQuotes} light={light}/>}
+            {adminTab==="quotes"&&<QuoteManager quotes={quotes} onRefresh={fetchQuotes} light={light}/>}
+            {adminTab==="topics"&&<TopicManager quotes={quotes} onRefresh={fetchQuotes} moods={moodsData} light={light}/>}
+            {adminTab==="moderation"&&<ModerationQueue quotes={quotes} onRefresh={fetchQuotes} light={light}/>}
           </div>
         ):(
           <>
-            {/* Daily Quote */}
             {showDaily&&dailyQuote&&(
               <div style={{background:light?"rgba(99,102,241,0.06)":"rgba(99,102,241,0.1)",borderRadius:14,padding:"14px 18px",marginBottom:20,border:"1px solid "+(light?"rgba(99,102,241,0.12)":"rgba(99,102,241,0.2)"),animation:"slideDown 0.5s ease",position:"relative"}}>
                 <button onClick={function(){setShowDaily(false)}} style={{position:"absolute",top:10,right:14,background:"none",border:"none",color:tc.fgSoft,cursor:"pointer",fontSize:16}}>✕</button>
@@ -553,7 +594,6 @@ export default function Quoteum(){
               </div>
             )}
 
-            {/* Search */}
             <div style={{display:"flex",justifyContent:"center",marginBottom:20,position:"relative"}}>
               <div style={{position:"relative",width:"100%",maxWidth:400}}>
                 <input className="s-input" placeholder="Search topics, words, or authors..." value={search} onChange={function(e){setSearch(e.target.value)}} onKeyDown={function(e){if(e.key==="Enter")handleSearch(search)}} style={{width:"100%"}}/>
@@ -566,7 +606,6 @@ export default function Quoteum(){
               </div>
             </div>
 
-            {/* Mood pills */}
             <div style={{display:"flex",flexWrap:"wrap",justifyContent:"center",gap:8,marginBottom:28}}>
               {Object.entries(moodsData).map(function(entry){
                 var key=entry[0],m=entry[1];
@@ -582,10 +621,10 @@ export default function Quoteum(){
                 </div>
                 <div style={{maxHeight:400,overflowY:"auto"}}>
                   {searchResults.map(function(q,i){return(
-                    <div key={i} className="res-c" onClick={function(){setCurrent(q);setAnimKey(function(k){return k+1});setTyping(true);setTypedText("");setSearchResults(null);setSearch("");setQuotes(function(prev){return prev.map(function(pq){return pq.id===q.id?{...pq,views:pq.views+1}:pq})})}}>
+                    <div key={q.id} className="res-c" onClick={function(){setCurrent(q);setAnimKey(function(k){return k+1});setTyping(true);setTypedText("");setSearchResults(null);setSearch("");supabase.from("quotes").update({views:(q.views||0)+1}).eq("id",q.id)}}>
                       <div style={{fontSize:15,lineHeight:1.5,marginBottom:6}}>{'"'+q.text+'"'}</div>
                       <div style={{fontSize:13,opacity:0.5}}>{"— "+q.author}</div>
-                      <div style={{marginTop:6}}>{q.topics.map(function(t){return <span key={t} className="tag">{t}</span>})}</div>
+                      <div style={{marginTop:6}}>{(q.topics||[]).map(function(t){return <span key={t} className="tag">{t}</span>})}</div>
                     </div>
                   )})}
                 </div>
@@ -599,7 +638,7 @@ export default function Quoteum(){
                     </div>
                     <div style={{fontSize:16,opacity:typing?0:0.6,transition:"opacity 0.5s",fontStyle:"italic"}}>{"— "+current.author}</div>
                     <div style={{marginTop:12,opacity:typing?0:1,transition:"opacity 0.5s 0.2s"}}>
-                      {current.topics.map(function(t){return <span key={t} className="tag" onClick={function(){handleSearch(t)}}>{t}</span>})}
+                      {(current.topics||[]).map(function(t){return <span key={t} className="tag" onClick={function(){handleSearch(t)}}>{t}</span>})}
                     </div>
                   </div>
                 )}
@@ -630,7 +669,7 @@ export default function Quoteum(){
         )}
       </div>
 
-      {showSubmit&&<SubmitModal onSubmit={function(q){setQuotes(function(prev){return[...prev,q]})}} onClose={function(){setShowSubmit(false)}} light={light}/>}
+      {showSubmit&&<SubmitModal onClose={function(){setShowSubmit(false);fetchQuotes()}} light={light}/>}
       {showLogin&&<LoginModal onLogin={function(){setIsAdmin(true);setShowLogin(false);setView("admin")}} onClose={function(){setShowLogin(false)}} light={light}/>}
     </div>
   );
