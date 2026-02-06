@@ -370,7 +370,7 @@ function SubmitModal(props){
   );
 }
 
-export default function Quotify(){
+export default function Quoteum(){
   var [quotes,setQuotes]=useState(defaultQuotes);
   var [light,setLight]=useState(false);
   var moodsData=light?lightMoods:darkMoods;
@@ -506,8 +506,8 @@ export default function Quotify(){
       <div style={{position:"relative",zIndex:10,padding:"24px 16px",maxWidth:800,margin:"0 auto"}}>
         {/* Header */}
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20,flexWrap:"wrap",gap:10}}>
-          <h1 onClick={function(){setView("explore")}} style={{fontSize:30,fontWeight:800,margin:0,letterSpacing:-1,cursor:"pointer",background:grad,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundSize:"200% auto",animation:"shimmer 4s linear infinite"}}>
-            ✦ Quotify
+          <h1 onClick={function(){setView("explore")}} style={{fontSize:30,fontWeight:800,margin:0,letterSpacing:-1,cursor:"pointer",backgroundImage:grad,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text",color:"transparent",backgroundSize:"200% auto",animation:"shimmer 4s linear infinite"}}>
+            {"✦ Quoteum"}
           </h1>
           <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
             <button onClick={function(){setLight(!light)}} style={{width:40,height:40,borderRadius:99,border:"1px solid "+tc.border,background:tc.cardBg,color:tc.fg,cursor:"pointer",fontSize:18,display:"flex",alignItems:"center",justifyContent:"center",transition:"all 0.3s"}} title={light?"Dark mode":"Light mode"}>
