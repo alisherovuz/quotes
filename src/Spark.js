@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { supabase } from "./supabase";
+import { Analytics } from '@vercel/analytics/react';
 
 var darkMoods = {
   all:{label:"All",gradient:["#6366f1","#8b5cf6","#a855f7"],bg:"#0f0a1e"},
@@ -671,6 +672,7 @@ export default function Quoteum(){
 
       {showSubmit&&<SubmitModal onClose={function(){setShowSubmit(false);fetchQuotes()}} light={light}/>}
       {showLogin&&<LoginModal onLogin={function(){setIsAdmin(true);setShowLogin(false);setView("admin")}} onClose={function(){setShowLogin(false)}} light={light}/>}
+      <Analytics />
     </div>
   );
 }
